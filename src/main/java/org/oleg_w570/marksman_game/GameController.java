@@ -24,7 +24,7 @@ public class GameController {
     Label shotsLabel;
     @FXML
     Pane gamePane;
-    Line arrow;
+    Arrow arrow;
     final double arrowMoveSpeed = 1.0;
     State state = State.OFF;
 
@@ -96,7 +96,7 @@ public class GameController {
             } else if (arrowHit(smallCircle)) {
                 increaseScore(2);
                 removeArrow();
-            } else if (arrow.getLayoutX() + (arrow.getEndX() - arrow.getStartX()) > gamePane.getWidth()) {
+            } else if (arrow.getLayoutX() + 45.0 > gamePane.getWidth()) {
                 removeArrow();
             }
         }
@@ -113,7 +113,7 @@ public class GameController {
     }
 
     void createArrow() {
-        arrow = new Line(0, 0.0, 45, 0.0);
+        arrow = new Arrow(0, 0.0, 45, 0.0);
         arrow.setLayoutX(5);
         arrow.setLayoutY(gamePane.getHeight() * 0.5);
         gamePane.getChildren().add(arrow);
@@ -125,7 +125,7 @@ public class GameController {
     }
 
     boolean arrowHit(Circle circle) {
-        final double arrowX = arrow.getLayoutX() + (arrow.getEndX() - arrow.getStartX());
+        final double arrowX = arrow.getLayoutX() + 45.0;
         final double arrowY = arrow.getLayoutY();
         final double circleX = circle.getLayoutX();
         final double circleY = circle.getLayoutY();
