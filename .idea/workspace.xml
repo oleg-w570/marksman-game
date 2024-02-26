@@ -5,9 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d25e75a7-49a5-4341-b9bc-3c337dd62439" name="Changes" comment="up">
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/Arrow.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/GameController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/GameController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/org/oleg_w570/marksman_game/marksman-game-view.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/org/oleg_w570/marksman_game/marksman-game-view.fxml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -98,6 +98,9 @@
       <workItem from="1708452655957" duration="1692000" />
       <workItem from="1708536284462" duration="1144000" />
       <workItem from="1708538859261" duration="523000" />
+      <workItem from="1708885842038" duration="71000" />
+      <workItem from="1708934742250" duration="673000" />
+      <workItem from="1708970784888" duration="1322000" />
     </task>
     <task id="LOCAL-00001" summary="init">
       <option name="closed" value="true" />
@@ -115,7 +118,15 @@
       <option name="project" value="LOCAL" />
       <updated>1708273359701</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="up">
+      <option name="closed" value="true" />
+      <created>1708885877898</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1708885877898</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

@@ -13,30 +13,30 @@
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.oleg_w570.marksman_game.GameController">
    <right>
-      <VBox alignment="TOP_CENTER" style="-fx-background-color: #303446;" BorderPane.alignment="CENTER">
+      <VBox alignment="TOP_CENTER" style="-fx-background-color: #ccd0da;" BorderPane.alignment="CENTER">
          <children>
-            <Label alignment="CENTER" style="-fx-font-weight: bold;" text="Player Score:" textFill="#c6d0f5" />
-            <Label fx:id="scoreLabel" text="0" textFill="#c6d0f5" />
-            <Label alignment="CENTER" style="-fx-font-weight: bold;" text="Shots:" textFill="#c6d0f5" />
-            <Label fx:id="shotsLabel" text="0" textFill="#c6d0f5" />
+            <Label alignment="CENTER" style="-fx-font-weight: bold;" text="Player Score:" textFill="#4c4f69" />
+            <Label fx:id="scoreLabel" text="0" textFill="#4c4f69" />
+            <Label alignment="CENTER" style="-fx-font-weight: bold;" text="Shots:" textFill="#4c4f69" />
+            <Label fx:id="shotsLabel" text="0" textFill="#4c4f69" />
          </children>
          <padding>
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
          </padding></VBox>
    </right>
    <center>
-      <Pane fx:id="gamePane" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #949cbb;" BorderPane.alignment="CENTER">
+      <Pane fx:id="gamePane" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #eff1f5;" BorderPane.alignment="CENTER">
          <children>
             <Line endX="-100.0" endY="366.5999755859375" layoutX="698.0" layoutY="183.0" startX="-100.0" startY="-183.0" />
             <Line endX="-99.99996948242188" endY="386.5999755859375" layoutX="593.0" layoutY="163.0" startX="-99.99996948242188" startY="-163.0" />
-            <Circle fx:id="bigCircle" fill="#ea999c" layoutX="493.0" layoutY="280.0" radius="50.0" stroke="BLACK" strokeType="INSIDE" />
-            <Circle fx:id="smallCircle" fill="#ea999c" layoutX="599.0" layoutY="280.0" radius="25.0" stroke="BLACK" strokeType="INSIDE" />
+            <Circle fx:id="bigCircle" fill="#7287fd" layoutX="493.0" layoutY="280.0" radius="50.0" stroke="BLACK" strokeType="INSIDE" />
+            <Circle fx:id="smallCircle" fill="#7287fd" layoutX="599.0" layoutY="280.0" radius="25.0" stroke="BLACK" strokeType="INSIDE" />
          </children></Pane>
    </center>
    <left>
-      <VBox alignment="CENTER" prefWidth="50.0" style="-fx-background-color: #303446;" BorderPane.alignment="CENTER">
+      <VBox alignment="CENTER" prefWidth="50.0" style="-fx-background-color: #ccd0da;" BorderPane.alignment="CENTER">
          <children>
-            <Polygon fill="#ea999c" points="-20.0, 25.0, 0.0, 0.0, -20.0, -25.0" stroke="BLACK" strokeType="INSIDE" />
+            <Polygon fill="#7287fd" points="-20.0, 25.0, 0.0, 0.0, -20.0, -25.0" stroke="BLACK" strokeType="INSIDE" />
          </children>
       </VBox>
    </left>
