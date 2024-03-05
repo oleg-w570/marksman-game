@@ -1,25 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Pane?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.shape.Circle?>
-<?import javafx.scene.shape.Line?>
-<?import javafx.scene.shape.Polygon?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.oleg_w570.marksman_game.GameController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.oleg_w570.marksman_game.GameClient">
    <right>
-      <VBox alignment="TOP_CENTER" style="-fx-background-color: #ccd0da;" BorderPane.alignment="CENTER">
-         <children>
-            <Label alignment="CENTER" style="-fx-font-weight: bold;" text="Player Score:" textFill="#4c4f69" />
-            <Label fx:id="scoreLabel" text="0" textFill="#4c4f69" />
-            <Label alignment="CENTER" style="-fx-font-weight: bold;" text="Shots:" textFill="#4c4f69" />
-            <Label fx:id="shotsLabel" text="0" textFill="#4c4f69" />
-         </children>
+      <VBox fx:id="infoBox" alignment="TOP_CENTER" prefWidth="100.0" style="-fx-background-color: #ccd0da;" BorderPane.alignment="CENTER">
          <padding>
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
          </padding></VBox>
@@ -34,14 +22,13 @@
          </children></Pane>
    </center>
    <left>
-      <VBox alignment="CENTER" prefWidth="50.0" style="-fx-background-color: #ccd0da;" BorderPane.alignment="CENTER">
-         <children>
-            <Polygon fill="#7287fd" points="-20.0, 25.0, 0.0, 0.0, -20.0, -25.0" stroke="BLACK" strokeType="INSIDE" />
-         </children>
-      </VBox>
+      <VBox fx:id="triangleBox" alignment="CENTER" prefWidth="50.0" spacing="10.0" style="-fx-background-color: #ccd0da;" BorderPane.alignment="CENTER">
+         <BorderPane.margin>
+            <Insets />
+         </BorderPane.margin></VBox>
    </left>
    <bottom>
-      <HBox alignment="CENTER" prefHeight="50.0" spacing="10.0" style="-fx-background-color: #232634;" BorderPane.alignment="CENTER">
+      <HBox alignment="CENTER" prefHeight="60.0" prefWidth="800.0" spacing="10.0" style="-fx-background-color: #232634;" BorderPane.alignment="CENTER">
          <children>
             <Button mnemonicParsing="false" onAction="#onStartButtonClick" style="-fx-background-color: #414559;" text="Start" textFill="#c6d0f5" />
             <Button mnemonicParsing="false" onAction="#onPauseButtonClick" style="-fx-background-color: #414559;" text="Pause" textFill="#c6d0f5" />
