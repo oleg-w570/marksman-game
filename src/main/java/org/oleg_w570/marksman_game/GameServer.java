@@ -1,8 +1,7 @@
 package org.oleg_w570.marksman_game;
 
 import com.google.gson.Gson;
-import javafx.application.Platform;
-import javafx.util.Pair;
+import javafx.scene.shape.Circle;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -10,6 +9,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
+import static java.lang.Math.sqrt;
 
 
 public class GameServer {
@@ -23,9 +24,9 @@ public class GameServer {
     };
     private final List<PlayerHandler> handlerList = new ArrayList<>();
     private ServerSocket serverSocket;
+    private final GameInfo gameInfo = new GameInfo(height);
     private static final double height = 540;
-    private CircleInfo bigCircle = new CircleInfo(0.5 * height, 50.0, 0.75);
-    private CircleInfo smallCircle = new CircleInfo(0.5 * height, 25.0, 1.5);
+    private static final double width = 650;
 
     public static void main(String[] args) {
         GameServer server = new GameServer();
@@ -45,8 +46,8 @@ public class GameServer {
     }
 
     public boolean containsNickname(String nickname) {
-        for (PlayerHandler p: handlerList) {
-            if (p.getPlayerInfo() != null && p.getPlayerInfo().getNickname().equals(nickname))
+        for (PlayerInfo p : gameInfo.allPlayers) {
+            if (p.nickname.equals(nickname))
                 return true;
         }
         return false;
@@ -54,14 +55,7 @@ public class GameServer {
 
     public void removePlayer(PlayerHandler player) {
         handlerList.remove(player);
-    }
-
-    public List<PlayerInfo> getAllPlayers() {
-        List<PlayerInfo> allPlayers = new ArrayList<>();
-        for (PlayerHandler h: handlerList) {
-            allPlayers.add(h.getPlayerInfo());
-        }
-        return allPlayers;
+        gameInfo.allPlayers.remove(player.getPlayerInfo());
     }
 
     public void addPlayer(String nickname, PlayerHandler handler) throws IOException {
@@ -70,55 +64,57 @@ public class GameServer {
             color = colors[rand.nextInt(colors.length)];
 
         PlayerInfo newPlayer = new PlayerInfo(nickname, color);
+        gameInfo.allPlayers.add(newPlayer);
         handler.setPlayerInfo(newPlayer);
 
         String jsonPlayer = gson.toJson(newPlayer);
         Action action = new Action(Action.Type.New, jsonPlayer);
         String json = gson.toJson(action);
-        for (PlayerHandler p: handlerList) {
+        for (PlayerHandler p : handlerList) {
             p.sendMessage(json);
         }
-
         handlerList.add(handler);
-        String jsonAllPlayers = gson.toJson(getAllPlayers());
-        handler.sendMessage(jsonAllPlayers);
+
+        String jsonInfo = gson.toJson(gameInfo);
+        handler.sendMessage(jsonInfo);
     }
 
     private boolean containsColor(String color) {
-        for (PlayerHandler h: handlerList) {
-            if (h.getPlayerInfo().getColor().equals(color))
+        for (PlayerInfo p : gameInfo.allPlayers) {
+            if (p.color.equals(color))
                 return true;
         }
         return false;
     }
 
     public void updateWantToStart(PlayerHandler handler) throws IOException {
-        Action wantToStart = new Action(Action.Type.WantToStart, handler.getPlayerInfo().getColor());
+        Action wantToStart = new Action(Action.Type.WantToStart, handler.getPlayerInfo().color);
         String json = gson.toJson(wantToStart);
-        for (PlayerHandler h: handlerList) {
+        for (PlayerHandler h : handlerList) {
             h.sendMessage(json);
         }
     }
 
     public boolean allWantToStart() {
-        for (PlayerHandler h: handlerList)
-            if (!h.getPlayerInfo().isWantToStart())
+        for (PlayerInfo p : gameInfo.allPlayers)
+            if (!p.wantToStart)
                 return false;
         return true;
     }
 
     public void startGame() throws IOException {
         if (allWantToStart()) {
+            setArrowStartY();
             Thread t = new Thread(() -> {
                 try {
                     while (true) {
 //                        if (state == State.PAUSE)
 //                            pause();
-                        PositionInfo nextPos = nextPos();
-                        String jsonPos = gson.toJson(nextPos);
-                        Action action = new Action(Action.Type.UpdatePos, jsonPos);
+                        next();
+                        String jsonInfo = gson.toJson(gameInfo);
+                        Action action = new Action(Action.Type.Update, jsonInfo);
                         String json = gson.toJson(action);
-                        for (PlayerHandler h: handlerList) {
+                        for (PlayerHandler h : handlerList) {
                             h.sendMessage(json);
                         }
                         Thread.sleep(4);
@@ -132,25 +128,44 @@ public class GameServer {
         }
     }
 
-    private PositionInfo nextPos() {
-        double bigNextPos = bigCircle.nextPos(height);
-        double smallNextPos = smallCircle.nextPos(height);
-        return new PositionInfo(bigNextPos, smallNextPos);
+    private void setArrowStartY() {
+        final int div = gameInfo.allPlayers.size() / 2;
+        final int mod = gameInfo.allPlayers.size() % 2;
+        for (int i = 0; i < gameInfo.allPlayers.size(); ++i) {
+            gameInfo.allPlayers.get(i).arrow.y = 0.5 * height + 50.0 * (i - div) + (1 - mod) * 25.0;
+        }
     }
 
-    void next() {
-//        if (arrow != null) {
-//            arrow.setLayoutX(arrow.getLayoutX() + arrowMoveSpeed);
-//            if (arrowHit(bigCircle)) {
-//                increaseScore(1);
-//                removeArrow();
-//            } else if (arrowHit(smallCircle)) {
-//                increaseScore(2);
-//                removeArrow();
-//            } else if (arrow.getLayoutX() + 45.0 > gamePane.getWidth()) {
-//                removeArrow();
-//            }
-//        }
+    private void next() {
+        nextCirclePos(gameInfo.bigCircle);
+        nextCirclePos(gameInfo.smallCircle);
+        for (PlayerInfo p : gameInfo.allPlayers) {
+            if (p.shooting) {
+                p.arrow.x += p.arrow.moveSpeed;
+                if (hit(p.arrow, gameInfo.bigCircle)) {
+                    ++p.score;
+                    p.shooting = false;
+                    p.arrow.x = 5.0;
+                } else if (hit(p.arrow, gameInfo.smallCircle)) {
+                    p.score += 2;
+                    p.shooting = false;
+                    p.arrow.x = 5.0;
+                } else if (p.arrow.x + 45.0 > width) {
+                    p.shooting = false;
+                    p.arrow.x = 5.0;
+                }
+            }
+        }
+    }
+
+    private void nextCirclePos(CircleInfo c) {
+        if (c.y + c.radius + c.moveSpeed > height || c.y - c.radius - c.moveSpeed < 0.0)
+            c.direction *= -1;
+        c.y += c.direction * c.moveSpeed;
+    }
+
+    boolean hit(ArrowInfo a, CircleInfo c) {
+        return sqrt((a.x + 45.0 - c.x) * (a.x + 45.0 - c.x) + (a.y - c.y) * (a.y - c.y)) < c.radius;
     }
 
     synchronized void resume() {

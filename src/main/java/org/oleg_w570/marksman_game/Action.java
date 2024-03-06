@@ -4,8 +4,9 @@ public record Action(Type type, String info) {
     public static enum Type {
         New,
         WantToStart,
-        UpdatePos,
+        Update,
         Shoot,
+        IncreaseShots,
         Pause,
         Resume,
         Exit,

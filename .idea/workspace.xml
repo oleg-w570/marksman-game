@@ -5,22 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d25e75a7-49a5-4341-b9bc-3c337dd62439" name="Changes" comment="up">
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/Action.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/CircleInfo.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/GameServer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/PlayerHandler.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/PlayerInfo.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/PositionInfo.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/ServerHandler.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/WelcomeController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/org/oleg_w570/marksman_game/welcome-view.fxml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/ArrowInfo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/GameInfo.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mvnw.cmd" beforeDir="false" afterPath="$PROJECT_DIR$/mvnw.cmd" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/module-info.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/GameController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/GameClient.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/MarksmanGame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/MarksmanGame.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/org/oleg_w570/marksman_game/marksman-game-view.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/org/oleg_w570/marksman_game/marksman-game-view.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/Action.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/Action.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/CircleInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/CircleInfo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/GameClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/GameClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/GameServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/GameServer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/PlayerHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/PlayerHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/PlayerInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/PlayerInfo.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/PositionInfo.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/ServerHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/ServerHandler.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -156,6 +151,7 @@
       <workItem from="1709590224362" duration="5479000" />
       <workItem from="1709627104919" duration="14408000" />
       <workItem from="1709654970799" duration="8768000" />
+      <workItem from="1709731138288" duration="18581000" />
     </task>
     <task id="LOCAL-00001" summary="init">
       <option name="closed" value="true" />

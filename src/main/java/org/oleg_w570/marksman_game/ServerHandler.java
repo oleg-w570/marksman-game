@@ -1,14 +1,9 @@
 package org.oleg_w570.marksman_game;
 
-import com.google.gson.reflect.TypeToken;
-
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.oleg_w570.marksman_game.GameClient.gson;
 
@@ -31,7 +26,7 @@ public class ServerHandler extends Thread {
     @Override
     public void run() {
         try {
-            requestAllInfo();
+            requestGameInfo();
             handlingMessage();
         } catch (IOException e) {
             throw new RuntimeException();
@@ -40,11 +35,10 @@ public class ServerHandler extends Thread {
         }
     }
 
-    private void requestAllInfo() throws IOException {
-        String jsonAllPlayers = in.readUTF();
-        Type listOfPlayers = new TypeToken<ArrayList<PlayerInfo>>(){}.getType();
-        List<PlayerInfo> allPlayers = gson.fromJson(jsonAllPlayers, listOfPlayers);
-        gameClient.addAllPlayers(allPlayers);
+    private void requestGameInfo() throws IOException {
+        String jsonInfo = in.readUTF();
+        GameInfo gameInfo = gson.fromJson(jsonInfo, GameInfo.class);
+        gameClient.setGameInfo(gameInfo);
     }
 
     private void handlingMessage() throws IOException {
@@ -54,15 +48,17 @@ public class ServerHandler extends Thread {
             Action action = gson.fromJson(msg, Action.class);
             switch (action.type()) {
                 case New:
-                    PlayerInfo playerInfo = gson.fromJson(action.info(), PlayerInfo.class);
-                    gameClient.addPlayer(playerInfo);
+                    gameClient.addPlayer(gson.fromJson(action.info(), PlayerInfo.class));
                     break;
                 case WantToStart:
                     gameClient.setPlayerWantToStart(action.info());
                     break;
-                case UpdatePos:
-                    PositionInfo posInfo = gson.fromJson(action.info(), PositionInfo.class);
-                    gameClient.updatePos(posInfo);
+                case Update:
+                    GameInfo gameInfo = gson.fromJson(action.info(), GameInfo.class);
+                    gameClient.updateGameInfo(gameInfo);
+                    break;
+                case IncreaseShots:
+                    gameClient.increaseShots(gson.fromJson(action.info(), PlayerInfo.class));
                     break;
                 case Exit:
                     break loop;

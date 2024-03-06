@@ -15,9 +15,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.List;
-
-import static java.lang.Math.sqrt;
 
 public class GameClient {
     public static final Gson gson = new Gson();
@@ -48,27 +45,27 @@ public class GameClient {
     public void addPlayer(PlayerInfo player) {
         Platform.runLater(() -> {
             Polygon triangle = new Polygon(0.0, 0.0, 20.0, -20.0, 0.0, -40.0);
-            triangle.setFill(Color.valueOf(player.getColor()));
-            if (player.isWantToStart())
+            triangle.setFill(Color.valueOf(player.color));
+            if (player.wantToStart)
                 triangle.setStroke(Color.BLACK);
             triangleBox.getChildren().add(triangle);
 
-            Label score = new Label(player.getNickname() + " score:");
+            Label score = new Label(player.nickname + " score:");
             infoBox.getChildren().add(score);
 
-            Label scoreCount = new Label(String.valueOf(player.getScore()));
+            Label scoreCount = new Label(String.valueOf(player.score));
             infoBox.getChildren().add(scoreCount);
 
-            Label shots = new Label(player.getNickname() + " shots:");
+            Label shots = new Label(player.nickname + " shots:");
             infoBox.getChildren().add(shots);
 
-            Label shotsCount = new Label(String.valueOf(player.getShots()));
+            Label shotsCount = new Label(String.valueOf(player.shots));
             infoBox.getChildren().add(shotsCount);
         });
     }
 
-    public void addAllPlayers(List<PlayerInfo> gameInfo) {
-        for (PlayerInfo p: gameInfo) {
+    public void setGameInfo(GameInfo gameInfo) {
+        for (PlayerInfo p : gameInfo.allPlayers) {
             addPlayer(p);
         }
     }
@@ -81,72 +78,97 @@ public class GameClient {
 
     @FXML
     void onPauseButtonClick() throws IOException {
-        String jsonPause = gson.toJson(Action.Type.Pause);
-        serverHandler.sendMessage(jsonPause);
-//        if (state == State.ON) {
-//            state = State.PAUSE;
-//        } else if (state == State.PAUSE) {
-//            state = State.ON;
-//            resume();
-//        }
+        String json = gson.toJson(Action.Type.Pause);
+        serverHandler.sendMessage(json);
     }
 
     @FXML
     void onShootButtonClick() throws IOException {
-        String jsonShoot = gson.toJson(Action.Type.Shoot);
-        serverHandler.sendMessage(jsonShoot);
-//        if (state == State.ON && arrow == null) {
-//            Platform.runLater(() -> {
-//                createArrow();
-//                increaseShots();
-//            });
-//        }
+        String json = gson.toJson(Action.Type.Shoot);
+        serverHandler.sendMessage(json);
     }
 
-    void increaseShots() {
-        final int shots = Integer.parseInt(shotsLabel.getText());
-        shotsLabel.setText(String.valueOf(shots + 1));
+    private Polygon findTriangleByColor(String color) {
+        for (Node c : triangleBox.getChildren()) {
+            if (((Polygon) c).getFill().equals(Color.valueOf(color)))
+                return (Polygon) c;
+        }
+        return null;
     }
 
-    void increaseScore(final int i) {
-        final int curScore = Integer.parseInt(scoreLabel.getText());
-        scoreLabel.setText(String.valueOf(curScore + i));
+    public void setPlayerWantToStart(String playerColor) {
+        Polygon playerTriangle = findTriangleByColor(playerColor);
+        playerTriangle.setStroke(Color.BLACK);
     }
 
-    void createArrow() {
-        arrow = new Arrow(0, 0.0, 45, 0.0);
-        arrow.setLayoutX(5);
-        arrow.setLayoutY(gamePane.getHeight() * 0.5);
-        gamePane.getChildren().add(arrow);
+    public void updateGameInfo(GameInfo gameInfo) {
+        Platform.runLater(() -> {
+            bigCircle.setLayoutY(gameInfo.bigCircle.y);
+            smallCircle.setLayoutY(gameInfo.smallCircle.y);
+            for (PlayerInfo p : gameInfo.allPlayers) {
+                Arrow playerArrow = findArrowByY(p.arrow.y);
+                if (p.shooting) {
+                    if (playerArrow == null) {
+                        playerArrow = createArrow(p.arrow.y);
+                        increaseShots(p);
+                    }
+                    playerArrow.setLayoutX(p.arrow.x);
+                } else if (playerArrow != null) {
+                    removeArrow(playerArrow);
+                    increaseScore(p);
+                }
+            }
+        });
     }
 
-    void removeArrow() {
-        gamePane.getChildren().remove(arrow);
-        arrow = null;
-    }
-
-    boolean arrowHit(Circle c) {
-        final double aX = arrow.getLayoutX() + 45.0;
-        final double aY = arrow.getLayoutY();
-        final double cX = c.getLayoutX();
-        final double cY = c.getLayoutY();
-
-        return sqrt((aX - cX) * (aX - cX) + (aY - cY) * (aY - cY)) < c.getRadius();
-    }
-
-    public void setPlayerWantToStart(String color) {
-        for (Node c: triangleBox.getChildren()) {
-            if (c instanceof Polygon) {
-                if (((Polygon) c).getFill().equals(Color.valueOf(color)))
-                    ((Polygon) c).setStroke(Color.BLACK);
+    private Arrow findArrowByY(double y) {
+        for (Node c : gamePane.getChildren()) {
+            if (c instanceof Arrow && Math.abs(c.getLayoutY() - y) < 0.000001d) {
+                return (Arrow) c;
             }
         }
+        return null;
     }
 
-    public void updatePos(PositionInfo posInfo) {
+    private Arrow createArrow(final double y) {
+        arrow = new Arrow(0, 0.0, 45, 0.0);
+        arrow.setLayoutX(5);
+        arrow.setLayoutY(y);
+        gamePane.getChildren().add(arrow);
+        return arrow;
+    }
+
+    private void removeArrow(final Arrow arrow) {
+        gamePane.getChildren().remove(arrow);
+    }
+
+    private Label findScoreLabel(final String nickname) {
+        for (int i = 0; i < infoBox.getChildren().size(); ++i) {
+            if (((Label) infoBox.getChildren().get(i)).getText().equals(nickname + " score:")) {
+                return (Label) infoBox.getChildren().get(i+1);
+            }
+        }
+        return null;
+    }
+
+    private void increaseScore(final PlayerInfo p) {
+        final Label scoreLabel = findScoreLabel(p.nickname);
+        scoreLabel.setText(String.valueOf(p.score));
+    }
+
+    private Label findShotsLabel(String nickname) {
+        for (int i = 0; i < infoBox.getChildren().size(); ++i) {
+            if (((Label) infoBox.getChildren().get(i)).getText().equals(nickname + " shots:")) {
+                return (Label) infoBox.getChildren().get(i+1);
+            }
+        }
+        return null;
+    }
+
+    public void increaseShots(PlayerInfo playerInfo) {
+        Label shotsLabel = findShotsLabel(playerInfo.nickname);
         Platform.runLater(() -> {
-            bigCircle.setLayoutY(posInfo.bigPos());
-            smallCircle.setLayoutY(posInfo.smallPos());
+            shotsLabel.setText(String.valueOf(playerInfo.shots));
         });
     }
 }

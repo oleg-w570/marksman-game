@@ -12,7 +12,7 @@ public class PlayerHandler extends Thread {
     private final Socket playerSocket;
     private final DataInputStream in;
     private DataOutputStream out;
-    private PlayerInfo playerInfo = null;
+    private PlayerInfo playerInfo;
 
 
     public PlayerHandler(GameServer server, Socket socket) throws IOException {
@@ -44,10 +44,17 @@ public class PlayerHandler extends Thread {
             Action.Type actionType = gson.fromJson(msg, Action.Type.class);
             switch (actionType) {
                 case WantToStart:
-                    playerInfo.setWantToStart(true);
+                    playerInfo.wantToStart = true;
                     gameServer.updateWantToStart(this);
                     gameServer.startGame();
                     break;
+                case Shoot:
+                    playerInfo.shooting = true;
+                    ++playerInfo.shots;
+                    break;
+                case Pause:
+                    playerInfo.wantToPause = true;
+
                 case Exit:
                     break loop;
             }
