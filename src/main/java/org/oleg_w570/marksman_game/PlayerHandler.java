@@ -9,7 +9,7 @@ import static org.oleg_w570.marksman_game.GameServer.gson;
 
 public class PlayerHandler extends Thread {
     private final GameServer gameServer;
-    private final Socket playerSocket;
+    private final Socket clientSocket;
     private final DataInputStream in;
     private DataOutputStream out;
     private PlayerInfo playerInfo;
@@ -17,7 +17,7 @@ public class PlayerHandler extends Thread {
 
     public PlayerHandler(GameServer server, Socket socket) throws IOException {
         gameServer = server;
-        playerSocket = socket;
+        clientSocket = socket;
         in = new DataInputStream(socket.getInputStream());
         out = new DataOutputStream(socket.getOutputStream());
         setDaemon(true);
@@ -31,14 +31,11 @@ public class PlayerHandler extends Thread {
             gameServer.addPlayer(nickname, this);
             handlingMessage();
         } catch (IOException e) {
-            throw new RuntimeException(e);
-        } finally {
-            downHandler();
+            stopConnection();
         }
     }
 
     private void handlingMessage() throws IOException {
-        loop:
         while (true) {
             String msg = in.readUTF();
             Action.Type actionType = gson.fromJson(msg, Action.Type.class);
@@ -52,11 +49,11 @@ public class PlayerHandler extends Thread {
                     playerInfo.shooting = true;
                     ++playerInfo.shots;
                     break;
-                case Pause:
-                    playerInfo.wantToPause = true;
-
-                case Exit:
-                    break loop;
+                case WantToPause:
+                    playerInfo.wantToPause = !playerInfo.wantToPause;
+                    gameServer.sendWantToPause(this);
+                    gameServer.pauseGame();
+                    break;
             }
         }
     }
@@ -71,21 +68,22 @@ public class PlayerHandler extends Thread {
         return nickname;
     }
 
-    private void downHandler() {
+    private void stopConnection() {
         try {
-            in.close();
-            out.close();
-            playerSocket.close();
+            clientSocket.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {
             gameServer.removePlayer(this);
-            interrupt();
         }
     }
 
-    public void sendMessage(String msg) throws IOException {
-        out.writeUTF(msg);
+    public void sendMessage(String msg) {
+        try {
+            out.writeUTF(msg);
+        } catch (IOException e) {
+            stopConnection();
+        }
     }
 
     public PlayerInfo getPlayerInfo() {

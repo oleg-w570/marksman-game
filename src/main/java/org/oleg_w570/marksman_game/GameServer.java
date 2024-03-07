@@ -1,7 +1,6 @@
 package org.oleg_w570.marksman_game;
 
 import com.google.gson.Gson;
-import javafx.scene.shape.Circle;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -22,11 +21,13 @@ public class GameServer {
             "#40a02b", "#179299", "#04a5e5", "#209fb5",
             "#1e66f5", "#7287fd"
     };
-    private final List<PlayerHandler> handlerList = new ArrayList<>();
-    private ServerSocket serverSocket;
-    private final GameInfo gameInfo = new GameInfo(height);
     private static final double height = 540;
     private static final double width = 650;
+    private GameState state = GameState.OFF;
+    private final GameInfo gameInfo = new GameInfo(height);
+    private final List<PlayerHandler> handlerList = new ArrayList<>();
+    private ServerSocket serverSocket;
+    Thread nextThread;
 
     public static void main(String[] args) {
         GameServer server = new GameServer();
@@ -45,17 +46,30 @@ public class GameServer {
         }
     }
 
+    public void removePlayer(PlayerHandler handler) {
+        handlerList.remove(handler);
+        gameInfo.playerList.remove(handler.getPlayerInfo());
+        sendRemove(handler.getPlayerInfo());
+        if (nextThread != null && nextThread.isAlive()) {
+            nextThread.interrupt();
+        }
+    }
+
+    private void sendRemove(PlayerInfo p) {
+        String jsonPlayer = gson.toJson(p);
+        Action action = new Action(Action.Type.Remove, jsonPlayer);
+        String json = gson.toJson(action);
+        for (PlayerHandler h : handlerList) {
+            h.sendMessage(json);
+        }
+    }
+
     public boolean containsNickname(String nickname) {
-        for (PlayerInfo p : gameInfo.allPlayers) {
+        for (PlayerInfo p : gameInfo.playerList) {
             if (p.nickname.equals(nickname))
                 return true;
         }
         return false;
-    }
-
-    public void removePlayer(PlayerHandler player) {
-        handlerList.remove(player);
-        gameInfo.allPlayers.remove(player.getPlayerInfo());
     }
 
     public void addPlayer(String nickname, PlayerHandler handler) throws IOException {
@@ -64,15 +78,10 @@ public class GameServer {
             color = colors[rand.nextInt(colors.length)];
 
         PlayerInfo newPlayer = new PlayerInfo(nickname, color);
-        gameInfo.allPlayers.add(newPlayer);
+        gameInfo.playerList.add(newPlayer);
         handler.setPlayerInfo(newPlayer);
 
-        String jsonPlayer = gson.toJson(newPlayer);
-        Action action = new Action(Action.Type.New, jsonPlayer);
-        String json = gson.toJson(action);
-        for (PlayerHandler p : handlerList) {
-            p.sendMessage(json);
-        }
+        sendNewPlayer(newPlayer);
         handlerList.add(handler);
 
         String jsonInfo = gson.toJson(gameInfo);
@@ -80,14 +89,23 @@ public class GameServer {
     }
 
     private boolean containsColor(String color) {
-        for (PlayerInfo p : gameInfo.allPlayers) {
+        for (PlayerInfo p : gameInfo.playerList) {
             if (p.color.equals(color))
                 return true;
         }
         return false;
     }
 
-    public void updateWantToStart(PlayerHandler handler) throws IOException {
+    private void sendNewPlayer(PlayerInfo p) throws IOException {
+        String jsonPlayer = gson.toJson(p);
+        Action action = new Action(Action.Type.New, jsonPlayer);
+        String json = gson.toJson(action);
+        for (PlayerHandler h : handlerList) {
+            h.sendMessage(json);
+        }
+    }
+
+    public void updateWantToStart(PlayerHandler handler) {
         Action wantToStart = new Action(Action.Type.WantToStart, handler.getPlayerInfo().color);
         String json = gson.toJson(wantToStart);
         for (PlayerHandler h : handlerList) {
@@ -95,51 +113,120 @@ public class GameServer {
         }
     }
 
-    public boolean allWantToStart() {
-        for (PlayerInfo p : gameInfo.allPlayers)
+    private boolean allWantToStart() {
+        for (PlayerInfo p : gameInfo.playerList)
             if (!p.wantToStart)
                 return false;
         return true;
     }
 
-    public void startGame() throws IOException {
+    private void sendState() {
+        String jsonState = gson.toJson(state);
+        Action action = new Action(Action.Type.State, jsonState);
+        String json = gson.toJson(action);
+        for (PlayerHandler h : handlerList) {
+            h.sendMessage(json);
+        }
+    }
+
+    public void startGame() {
         if (allWantToStart()) {
             setArrowStartY();
-            Thread t = new Thread(() -> {
+            state = GameState.ON;
+            sendState();
+            nextThread = new Thread(() -> {
                 try {
-                    while (true) {
-//                        if (state == State.PAUSE)
-//                            pause();
+                    while (!isGameOver()) {
+                        if (state == GameState.PAUSE)
+                            pause();
                         next();
-                        String jsonInfo = gson.toJson(gameInfo);
-                        Action action = new Action(Action.Type.Update, jsonInfo);
-                        String json = gson.toJson(action);
-                        for (PlayerHandler h : handlerList) {
-                            h.sendMessage(json);
-                        }
+                        sendGameInfo(Action.Type.Update);
                         Thread.sleep(4);
                     }
-                } catch (InterruptedException | IOException e) {
-                    throw new RuntimeException(e);
+                    sendWinner();
+                } catch (InterruptedException e) {
+                    sendStop();
+                } finally {
+                    resetInfo();
+                    sendGameInfo(Action.Type.Reset);
+                    state = GameState.OFF;
+                    sendState();
                 }
             });
-            t.setDaemon(true);
-            t.start();
+            nextThread.setDaemon(true);
+            nextThread.start();
+        }
+    }
+
+    private void sendStop() {
+        Action action = new Action(Action.Type.Stop, null);
+        String json = gson.toJson(action);
+        for (PlayerHandler h : handlerList) {
+            h.sendMessage(json);
+        }
+    }
+
+    private PlayerInfo findWinner() {
+        PlayerInfo winner = gameInfo.playerList.getFirst();
+        for (PlayerInfo p : gameInfo.playerList) {
+            if (p.score > winner.score)
+                winner = p;
+        }
+        return winner;
+    }
+
+    private void sendWinner() {
+        PlayerInfo winner = findWinner();
+        String jsonWinner = gson.toJson(winner);
+        Action action = new Action(Action.Type.Winner, jsonWinner);
+        String json = gson.toJson(action);
+        for (PlayerHandler p : handlerList) {
+            p.sendMessage(json);
+        }
+    }
+
+    private void resetInfo() {
+        for (PlayerInfo p : gameInfo.playerList) {
+            p.score = 0;
+            p.shots = 0;
+            p.shooting = false;
+            p.wantToPause = false;
+            p.wantToStart = false;
+            p.arrow.x = 5.0;
+        }
+        gameInfo.bigCircle.y = 0.5 * height;
+        gameInfo.smallCircle.y = 0.5 * height;
+    }
+
+    private boolean isGameOver() {
+        for (PlayerInfo p : gameInfo.playerList) {
+            if (p.score > 5)
+                return true;
+        }
+        return false;
+    }
+
+    private void sendGameInfo(Action.Type type) {
+        String jsonInfo = gson.toJson(gameInfo);
+        Action action = new Action(type, jsonInfo);
+        String json = gson.toJson(action);
+        for (PlayerHandler h : handlerList) {
+            h.sendMessage(json);
         }
     }
 
     private void setArrowStartY() {
-        final int div = gameInfo.allPlayers.size() / 2;
-        final int mod = gameInfo.allPlayers.size() % 2;
-        for (int i = 0; i < gameInfo.allPlayers.size(); ++i) {
-            gameInfo.allPlayers.get(i).arrow.y = 0.5 * height + 50.0 * (i - div) + (1 - mod) * 25.0;
+        final int div = gameInfo.playerList.size() / 2;
+        final int mod = gameInfo.playerList.size() % 2;
+        for (int i = 0; i < gameInfo.playerList.size(); ++i) {
+            gameInfo.playerList.get(i).arrow.y = 0.5 * height + 50.0 * (i - div) + (1 - mod) * 25.0;
         }
     }
 
     private void next() {
         nextCirclePos(gameInfo.bigCircle);
         nextCirclePos(gameInfo.smallCircle);
-        for (PlayerInfo p : gameInfo.allPlayers) {
+        for (PlayerInfo p : gameInfo.playerList) {
             if (p.shooting) {
                 p.arrow.x += p.arrow.moveSpeed;
                 if (hit(p.arrow, gameInfo.bigCircle)) {
@@ -174,5 +261,47 @@ public class GameServer {
 
     synchronized void pause() throws InterruptedException {
         this.wait();
+    }
+
+    private boolean allWantToPause() {
+        for (PlayerInfo p : gameInfo.playerList) {
+            if (!p.wantToPause)
+                return false;
+        }
+        return true;
+    }
+
+    private boolean allWantToResume() {
+        for (PlayerInfo p : gameInfo.playerList) {
+            if (p.wantToPause)
+                return false;
+        }
+        return true;
+    }
+
+    public void pauseGame() {
+        switch (state) {
+            case PAUSE:
+                if (allWantToResume()) {
+                    state = GameState.ON;
+                    sendState();
+                    resume();
+                }
+                break;
+            case ON:
+                if (allWantToPause()) {
+                    state = GameState.PAUSE;
+                    sendState();
+                }
+                break;
+        }
+    }
+
+    public void sendWantToPause(PlayerHandler handler) {
+        Action action = new Action(Action.Type.WantToPause, handler.getPlayerInfo().color);
+        String json = gson.toJson(action);
+        for (PlayerHandler h : handlerList) {
+            h.sendMessage(json);
+        }
     }
 }

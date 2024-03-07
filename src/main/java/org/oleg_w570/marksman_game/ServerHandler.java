@@ -42,26 +42,18 @@ public class ServerHandler extends Thread {
     }
 
     private void handlingMessage() throws IOException {
-        loop:
         while (true) {
             String msg = in.readUTF();
             Action action = gson.fromJson(msg, Action.class);
             switch (action.type()) {
-                case New:
-                    gameClient.addPlayer(gson.fromJson(action.info(), PlayerInfo.class));
-                    break;
-                case WantToStart:
-                    gameClient.setPlayerWantToStart(action.info());
-                    break;
-                case Update:
-                    GameInfo gameInfo = gson.fromJson(action.info(), GameInfo.class);
-                    gameClient.updateGameInfo(gameInfo);
-                    break;
-                case IncreaseShots:
-                    gameClient.increaseShots(gson.fromJson(action.info(), PlayerInfo.class));
-                    break;
-                case Exit:
-                    break loop;
+                case New -> gameClient.addPlayer(gson.fromJson(action.info(), PlayerInfo.class));
+                case WantToStart -> gameClient.setPlayerWantToStart(action.info());
+                case State -> gameClient.setState(gson.fromJson(action.info(), GameState.class));
+                case Update -> gameClient.updateGameInfo(gson.fromJson(action.info(), GameInfo.class));
+                case WantToPause -> gameClient.updatePlayerWantToStart(action.info());
+                case Winner -> gameClient.showWinner(gson.fromJson(action.info(), PlayerInfo.class));
+                case Reset -> gameClient.resetGameInfo(gson.fromJson(action.info(), GameInfo.class));
+                case Remove -> gameClient.removePlayer(gson.fromJson(action.info(), PlayerInfo.class));
             }
         }
     }

@@ -7,7 +7,7 @@
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.oleg_w570.marksman_game.GameClient">
    <right>
-      <VBox fx:id="infoBox" alignment="TOP_CENTER" prefWidth="100.0" style="-fx-background-color: #ccd0da;" BorderPane.alignment="CENTER">
+      <VBox fx:id="labelBox" alignment="TOP_CENTER" prefWidth="100.0" style="-fx-background-color: #ccd0da;" BorderPane.alignment="CENTER">
          <padding>
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
          </padding></VBox>
