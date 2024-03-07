@@ -3,8 +3,10 @@ package org.oleg_w570.marksman_game;
 import com.google.gson.Gson;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
+import javafx.scene.layout.Border;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -13,7 +15,6 @@ import javafx.scene.shape.Polygon;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.IOException;
 import java.net.Socket;
 
 public class GameClient {
@@ -31,7 +32,7 @@ public class GameClient {
     ServerHandler serverHandler;
     GameState state = GameState.OFF;
 
-    public void connectServer(Socket socket, DataInputStream dataInputStream, DataOutputStream dataOutputStream) throws IOException {
+    public void connectServer(Socket socket, DataInputStream dataInputStream, DataOutputStream dataOutputStream) {
         serverHandler = new ServerHandler(this, socket, dataInputStream, dataOutputStream);
     }
 
@@ -60,13 +61,13 @@ public class GameClient {
     }
 
 
-    public void setGameInfo(GameInfo gameInfo) {
+    public void setGameInfo(final GameInfo gameInfo) {
         for (PlayerInfo p : gameInfo.playerList) {
             addPlayer(p);
         }
     }
 
-    public void addPlayer(PlayerInfo p) {
+    public void addPlayer(final PlayerInfo p) {
         Platform.runLater(() -> {
             Polygon triangle = new Polygon(0.0, 0.0, 20.0, -20.0, 0.0, -40.0);
             triangle.setId(p.nickname + "Triangle");
@@ -75,33 +76,39 @@ public class GameClient {
             triangleBox.getChildren().add(triangle);
 
             Label score = new Label(p.nickname + " score:");
+            score.setTextFill(Color.valueOf("#4c4f69"));
             score.setId(p.nickname + "Score");
-            labelBox.getChildren().add(score);
 
             Label scoreCount = new Label(String.valueOf(p.score));
+            scoreCount.setTextFill(Color.valueOf("#4c4f69"));
             scoreCount.setId(p.nickname + "ScoreCount");
-            labelBox.getChildren().add(scoreCount);
 
             Label shots = new Label(p.nickname + " shots:");
+            shots.setTextFill(Color.valueOf("#4c4f69"));
             shots.setId(p.nickname + "Shots");
-            labelBox.getChildren().add(shots);
 
             Label shotsCount = new Label(String.valueOf(p.shots));
+            shotsCount.setTextFill(Color.valueOf("#4c4f69"));
             shotsCount.setId(p.nickname + "ShotsCount");
-            labelBox.getChildren().add(shotsCount);
+
+            VBox vbox = new VBox(0.0d, score, scoreCount, shots, shotsCount);
+            vbox.setBorder(Border.stroke(Color.valueOf("#4c4f69")));
+            vbox.setAlignment(Pos.CENTER);
+            vbox.setId(p.nickname + "VBox");
+            labelBox.getChildren().add(vbox);
         });
     }
 
-    private Polygon findTriangle(String nickname) {
+    private Polygon findTriangle(final String nickname) {
         return (Polygon) gamePane.getScene().lookup("#" + nickname + "Triangle");
     }
 
-    public void setPlayerWantToStart(String nickname) {
+    public void setPlayerWantToStart(final String nickname) {
         Polygon playerTriangle = findTriangle(nickname);
         playerTriangle.setStroke(Color.BLACK);
     }
 
-    public void updateGameInfo(GameInfo gameInfo) {
+    public void updateGameInfo(final GameInfo gameInfo) {
         Platform.runLater(() -> {
             bigCircle.setLayoutY(gameInfo.bigCircle.y);
             smallCircle.setLayoutY(gameInfo.smallCircle.y);
@@ -166,7 +173,7 @@ public class GameClient {
         this.state = state;
     }
 
-    public void showWinner(PlayerInfo p) {
+    public void showWinner(final PlayerInfo p) {
         Platform.runLater(() -> {
             String info = "Congratulations to " + p.nickname + "!\n" + p.nickname + " won with " + p.score + " score.";
             Alert alert = new Alert(Alert.AlertType.INFORMATION, info);
@@ -187,23 +194,16 @@ public class GameClient {
         });
     }
 
-    public void removePlayer(String nickname) {
+    public void removePlayer(final String nickname) {
         Platform.runLater(() -> {
             gamePane.getChildren().remove(findArrow(nickname));
             triangleBox.getChildren().remove(findTriangle(nickname));
-            labelBox.getChildren().remove(findShotsCountLabel(nickname));
-            labelBox.getChildren().remove(findScoreCountLabel(nickname));
-            labelBox.getChildren().remove(findShotsLabel(nickname));
-            labelBox.getChildren().remove(findScoreLabel(nickname));
+            labelBox.getChildren().remove(findVBox(nickname));
         });
     }
 
-    private Label findShotsLabel(String nickname) {
-        return (Label) gamePane.getScene().lookup("#" + nickname + "Shots");
-    }
-
-    private Label findScoreLabel(String nickname) {
-        return (Label) gamePane.getScene().lookup("#" + nickname + "Score");
+    private VBox findVBox(final String nickname) {
+        return (VBox) gamePane.getScene().lookup("#" + nickname + "VBox");
     }
 
     public void showStop() {
