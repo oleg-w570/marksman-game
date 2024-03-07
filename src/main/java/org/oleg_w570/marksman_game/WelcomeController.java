@@ -18,6 +18,8 @@ public class WelcomeController {
     private Socket clientSocket;
     private DataInputStream in;
     private DataOutputStream out;
+    private double xOffset;
+    private double yOffset;
 
     @FXML
     private void initialize() throws IOException {
@@ -32,11 +34,12 @@ public class WelcomeController {
         String response = in.readUTF();
         if (response.equals("OK")) {
             FXMLLoader fxmlLoader = new FXMLLoader(MarksmanGame.class.getResource("marksman-game-view.fxml"));
-            Scene scene = new Scene(fxmlLoader.load(), 800, 600);
+            Scene scene = new Scene(fxmlLoader.load());
             Stage stage = (Stage) nicknameField.getScene().getWindow();
             stage.setScene(scene);
-            GameClient controller = fxmlLoader.getController();
-            controller.setConnection(clientSocket, in, out);
+
+            GameClient client = fxmlLoader.getController();
+            client.connectServer(clientSocket, in, out);
         } else {
             Alert alert = new Alert(Alert.AlertType.WARNING, response);
             alert.showAndWait();

@@ -15,18 +15,12 @@ import static java.lang.Math.sqrt;
 public class GameServer {
     public static final Gson gson = new Gson();
     private static final Random rand = new Random();
-    private static final String[] colors = {
-            "#dc8a78", "#dd7878", "#ea76cb", "#8839ef",
-            "#d20f39", "#d20f39", "#fe640b", "#df8e1d",
-            "#40a02b", "#179299", "#04a5e5", "#209fb5",
-            "#1e66f5", "#7287fd"
-    };
+    private static final String[] colors = {"#dc8a78", "#dd7878", "#ea76cb", "#8839ef", "#d20f39", "#d20f39", "#fe640b", "#df8e1d", "#40a02b", "#179299", "#04a5e5", "#209fb5", "#1e66f5", "#7287fd"};
     private static final double height = 540;
     private static final double width = 650;
     private GameState state = GameState.OFF;
     private final GameInfo gameInfo = new GameInfo(height);
     private final List<PlayerHandler> handlerList = new ArrayList<>();
-    private ServerSocket serverSocket;
     Thread nextThread;
 
     public static void main(String[] args) {
@@ -35,8 +29,7 @@ public class GameServer {
     }
 
     public void start(int port) {
-        try {
-            serverSocket = new ServerSocket(port);
+        try (ServerSocket serverSocket = new ServerSocket(port)) {
             while (true) {
                 Socket clientSocket = serverSocket.accept();
                 new PlayerHandler(this, clientSocket);
@@ -48,16 +41,19 @@ public class GameServer {
 
     public void removePlayer(PlayerHandler handler) {
         handlerList.remove(handler);
-        gameInfo.playerList.remove(handler.getPlayerInfo());
-        sendRemove(handler.getPlayerInfo());
-        if (nextThread != null && nextThread.isAlive()) {
-            nextThread.interrupt();
+        if (handler.getPlayerInfo() != null) {
+            gameInfo.playerList.remove(handler.getPlayerInfo());
+            sendRemove(handler.getPlayerInfo());
+            if (nextThread != null && nextThread.isAlive()) {
+                nextThread.interrupt();
+            } else {
+                startGame();
+            }
         }
     }
 
     private void sendRemove(PlayerInfo p) {
-        String jsonPlayer = gson.toJson(p);
-        Action action = new Action(Action.Type.Remove, jsonPlayer);
+        Action action = new Action(Action.Type.Remove, p.nickname);
         String json = gson.toJson(action);
         for (PlayerHandler h : handlerList) {
             h.sendMessage(json);
@@ -66,16 +62,14 @@ public class GameServer {
 
     public boolean containsNickname(String nickname) {
         for (PlayerInfo p : gameInfo.playerList) {
-            if (p.nickname.equals(nickname))
-                return true;
+            if (p.nickname.equals(nickname)) return true;
         }
         return false;
     }
 
     public void addPlayer(String nickname, PlayerHandler handler) throws IOException {
         String color = colors[rand.nextInt(colors.length)];
-        while (containsColor(color))
-            color = colors[rand.nextInt(colors.length)];
+        while (containsColor(color)) color = colors[rand.nextInt(colors.length)];
 
         PlayerInfo newPlayer = new PlayerInfo(nickname, color);
         gameInfo.playerList.add(newPlayer);
@@ -90,8 +84,7 @@ public class GameServer {
 
     private boolean containsColor(String color) {
         for (PlayerInfo p : gameInfo.playerList) {
-            if (p.color.equals(color))
-                return true;
+            if (p.color.equals(color)) return true;
         }
         return false;
     }
@@ -105,8 +98,8 @@ public class GameServer {
         }
     }
 
-    public void updateWantToStart(PlayerHandler handler) {
-        Action wantToStart = new Action(Action.Type.WantToStart, handler.getPlayerInfo().color);
+    public void sendWantToStart(PlayerHandler handler) {
+        Action wantToStart = new Action(Action.Type.WantToStart, handler.getPlayerInfo().nickname);
         String json = gson.toJson(wantToStart);
         for (PlayerHandler h : handlerList) {
             h.sendMessage(json);
@@ -115,8 +108,7 @@ public class GameServer {
 
     private boolean allWantToStart() {
         for (PlayerInfo p : gameInfo.playerList)
-            if (!p.wantToStart)
-                return false;
+            if (!p.wantToStart) return false;
         return true;
     }
 
@@ -130,15 +122,14 @@ public class GameServer {
     }
 
     public void startGame() {
-        if (allWantToStart()) {
+        if (allWantToStart() && !gameInfo.playerList.isEmpty()) {
             setArrowStartY();
             state = GameState.ON;
             sendState();
             nextThread = new Thread(() -> {
                 try {
                     while (!isGameOver()) {
-                        if (state == GameState.PAUSE)
-                            pause();
+                        if (state == GameState.PAUSE) pause();
                         next();
                         sendGameInfo(Action.Type.Update);
                         Thread.sleep(4);
@@ -169,8 +160,7 @@ public class GameServer {
     private PlayerInfo findWinner() {
         PlayerInfo winner = gameInfo.playerList.getFirst();
         for (PlayerInfo p : gameInfo.playerList) {
-            if (p.score > winner.score)
-                winner = p;
+            if (p.score > winner.score) winner = p;
         }
         return winner;
     }
@@ -195,13 +185,14 @@ public class GameServer {
             p.arrow.x = 5.0;
         }
         gameInfo.bigCircle.y = 0.5 * height;
+        gameInfo.bigCircle.direction = 1;
         gameInfo.smallCircle.y = 0.5 * height;
+        gameInfo.smallCircle.direction = 1;
     }
 
     private boolean isGameOver() {
         for (PlayerInfo p : gameInfo.playerList) {
-            if (p.score > 5)
-                return true;
+            if (p.score > 5) return true;
         }
         return false;
     }
@@ -246,8 +237,7 @@ public class GameServer {
     }
 
     private void nextCirclePos(CircleInfo c) {
-        if (c.y + c.radius + c.moveSpeed > height || c.y - c.radius - c.moveSpeed < 0.0)
-            c.direction *= -1;
+        if (c.y + c.radius + c.moveSpeed > height || c.y - c.radius - c.moveSpeed < 0.0) c.direction *= -1;
         c.y += c.direction * c.moveSpeed;
     }
 
@@ -265,16 +255,14 @@ public class GameServer {
 
     private boolean allWantToPause() {
         for (PlayerInfo p : gameInfo.playerList) {
-            if (!p.wantToPause)
-                return false;
+            if (!p.wantToPause) return false;
         }
         return true;
     }
 
     private boolean allWantToResume() {
         for (PlayerInfo p : gameInfo.playerList) {
-            if (p.wantToPause)
-                return false;
+            if (p.wantToPause) return false;
         }
         return true;
     }
@@ -298,10 +286,14 @@ public class GameServer {
     }
 
     public void sendWantToPause(PlayerHandler handler) {
-        Action action = new Action(Action.Type.WantToPause, handler.getPlayerInfo().color);
+        Action action = new Action(Action.Type.WantToPause, handler.getPlayerInfo().nickname);
         String json = gson.toJson(action);
         for (PlayerHandler h : handlerList) {
             h.sendMessage(json);
         }
+    }
+
+    public boolean isGameStarted() {
+        return state == GameState.ON || state == GameState.PAUSE;
     }
 }

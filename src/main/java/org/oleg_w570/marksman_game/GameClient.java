@@ -3,7 +3,6 @@ package org.oleg_w570.marksman_game;
 import com.google.gson.Gson;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
@@ -32,12 +31,12 @@ public class GameClient {
     ServerHandler serverHandler;
     GameState state = GameState.OFF;
 
-    public void setConnection(Socket socket, DataInputStream dataInputStream, DataOutputStream dataOutputStream) throws IOException {
+    public void connectServer(Socket socket, DataInputStream dataInputStream, DataOutputStream dataOutputStream) throws IOException {
         serverHandler = new ServerHandler(this, socket, dataInputStream, dataOutputStream);
     }
 
     @FXML
-    void onStartButtonClick() throws IOException {
+    void onStartButtonClick() {
         if (state == GameState.OFF) {
             String jsonStart = gson.toJson(Action.Type.WantToStart);
             serverHandler.sendMessage(jsonStart);
@@ -45,7 +44,7 @@ public class GameClient {
     }
 
     @FXML
-    void onPauseButtonClick() throws IOException {
+    void onPauseButtonClick() {
         if (state != GameState.OFF) {
             String json = gson.toJson(Action.Type.WantToPause);
             serverHandler.sendMessage(json);
@@ -53,7 +52,7 @@ public class GameClient {
     }
 
     @FXML
-    void onShootButtonClick() throws IOException {
+    void onShootButtonClick() {
         if (state == GameState.ON) {
             String json = gson.toJson(Action.Type.Shoot);
             serverHandler.sendMessage(json);
@@ -76,32 +75,29 @@ public class GameClient {
             triangleBox.getChildren().add(triangle);
 
             Label score = new Label(p.nickname + " score:");
-            score.setId(p.nickname+"Score");
+            score.setId(p.nickname + "Score");
             labelBox.getChildren().add(score);
 
             Label scoreCount = new Label(String.valueOf(p.score));
-            score.setId(p.nickname+"ScoreCount");
+            scoreCount.setId(p.nickname + "ScoreCount");
             labelBox.getChildren().add(scoreCount);
 
             Label shots = new Label(p.nickname + " shots:");
-            score.setId(p.nickname+"Shots");
+            shots.setId(p.nickname + "Shots");
             labelBox.getChildren().add(shots);
 
             Label shotsCount = new Label(String.valueOf(p.shots));
-            score.setId(p.nickname+"ShotsCount");
+            shotsCount.setId(p.nickname + "ShotsCount");
             labelBox.getChildren().add(shotsCount);
         });
     }
 
-    private Polygon findTriangleByColor(String color) {
-        for (Node c : triangleBox.getChildren()) {
-            if (((Polygon) c).getFill().equals(Color.valueOf(color))) return (Polygon) c;
-        }
-        return null;
+    private Polygon findTriangle(String nickname) {
+        return (Polygon) gamePane.getScene().lookup("#" + nickname + "Triangle");
     }
 
-    public void setPlayerWantToStart(String playerColor) {
-        Polygon playerTriangle = findTriangleByColor(playerColor);
+    public void setPlayerWantToStart(String nickname) {
+        Polygon playerTriangle = findTriangle(nickname);
         playerTriangle.setStroke(Color.BLACK);
     }
 
@@ -110,7 +106,7 @@ public class GameClient {
             bigCircle.setLayoutY(gameInfo.bigCircle.y);
             smallCircle.setLayoutY(gameInfo.smallCircle.y);
             for (PlayerInfo p : gameInfo.playerList) {
-                Arrow playerArrow = findArrow(p.arrow.y);
+                Arrow playerArrow = findArrow(p.nickname);
                 if (p.shooting) {
                     if (playerArrow == null) {
                         playerArrow = createArrow(p);
@@ -125,22 +121,17 @@ public class GameClient {
         });
     }
 
-    private Arrow findArrow(double y) {
-        for (Node c : gamePane.getChildren()) {
-            if (c instanceof Arrow && Math.abs(c.getLayoutY() - y) < 0.000001d) {
-                return (Arrow) c;
-            }
-        }
-        return null;
-    }
-
     private Arrow createArrow(final PlayerInfo p) {
         Arrow arrow = new Arrow(0, 0.0, 45, 0.0);
         arrow.setLayoutX(5);
         arrow.setLayoutY(p.arrow.y);
-        arrow.setId(p.nickname+"Arrow");
+        arrow.setId(p.nickname + "Arrow");
         gamePane.getChildren().add(arrow);
         return arrow;
+    }
+
+    private Arrow findArrow(final String nickname) {
+        return (Arrow) gamePane.getScene().lookup("#" + nickname + "Arrow");
     }
 
     private void removeArrow(final Arrow arrow) {
@@ -148,12 +139,7 @@ public class GameClient {
     }
 
     private Label findScoreCountLabel(final String nickname) {
-        for (int i = 0; i < labelBox.getChildren().size(); ++i) {
-            if (((Label) labelBox.getChildren().get(i)).getText().equals(nickname + " score:")) {
-                return (Label) labelBox.getChildren().get(i + 1);
-            }
-        }
-        return null;
+        return (Label) gamePane.getScene().lookup("#" + nickname + "ScoreCount");
     }
 
     private void setScore(final PlayerInfo p) {
@@ -162,23 +148,16 @@ public class GameClient {
     }
 
     private Label findShotsCountLabel(final String nickname) {
-        for (int i = 0; i < labelBox.getChildren().size(); ++i) {
-            if (((Label) labelBox.getChildren().get(i)).getText().equals(nickname + " shots:")) {
-                return (Label) labelBox.getChildren().get(i + 1);
-            }
-        }
-        return null;
+        return (Label) gamePane.getScene().lookup("#" + nickname + "ShotsCount");
     }
 
     public void setShots(final PlayerInfo playerInfo) {
-        Platform.runLater(() -> {
-            Label shotsLabel = findShotsCountLabel(playerInfo.nickname);
-            shotsLabel.setText(String.valueOf(playerInfo.shots));
-        });
+        Label shotsLabel = findShotsCountLabel(playerInfo.nickname);
+        shotsLabel.setText(String.valueOf(playerInfo.shots));
     }
 
-    public void updatePlayerWantToStart(final String playerColor) {
-        Polygon playerTriangle = findTriangleByColor(playerColor);
+    public void updatePlayerWantToPause(final String playerColor) {
+        Polygon playerTriangle = findTriangle(playerColor);
         if (playerTriangle.getStroke() == Color.BLACK) playerTriangle.setStroke(Color.RED);
         else playerTriangle.setStroke(Color.BLACK);
     }
@@ -202,21 +181,36 @@ public class GameClient {
             for (PlayerInfo p : gameInfo.playerList) {
                 setShots(p);
                 setScore(p);
-                gamePane.getChildren().remove(findArrow(p.arrow.y));
-                findTriangleByColor(p.color).setStroke(Color.TRANSPARENT);
+                gamePane.getChildren().remove(findArrow(p.nickname));
+                findTriangle(p.nickname).setStroke(Color.TRANSPARENT);
             }
         });
     }
 
-    public void removePlayer(PlayerInfo p) {
+    public void removePlayer(String nickname) {
         Platform.runLater(() -> {
-            gamePane.getChildren().remove(findArrow(p.arrow.y));
-            triangleBox.getChildren().remove(findTriangleByColor(p.color));
-            labelBox.getChildren().remove(findShotsCountLabel(p.nickname));
-            labelBox.getChildren().remove(findScoreCountLabel(p.nickname));
-
+            gamePane.getChildren().remove(findArrow(nickname));
+            triangleBox.getChildren().remove(findTriangle(nickname));
+            labelBox.getChildren().remove(findShotsCountLabel(nickname));
+            labelBox.getChildren().remove(findScoreCountLabel(nickname));
+            labelBox.getChildren().remove(findShotsLabel(nickname));
+            labelBox.getChildren().remove(findScoreLabel(nickname));
         });
     }
 
-//    private void findShotsLabel()
+    private Label findShotsLabel(String nickname) {
+        return (Label) gamePane.getScene().lookup("#" + nickname + "Shots");
+    }
+
+    private Label findScoreLabel(String nickname) {
+        return (Label) gamePane.getScene().lookup("#" + nickname + "Score");
+    }
+
+    public void showStop() {
+        Platform.runLater(() -> {
+            String info = "The game was urgently stopped due to the player's exit.";
+            Alert alert = new Alert(Alert.AlertType.WARNING, info);
+            alert.show();
+        });
+    }
 }

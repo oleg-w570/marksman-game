@@ -5,14 +5,17 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-
-import java.io.IOException;
+import javafx.stage.StageStyle;
 
 public class MarksmanGame extends Application {
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         FXMLLoader fxmlLoader = new FXMLLoader(MarksmanGame.class.getResource("welcome-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 300, 400);
+        Scene scene = new Scene(fxmlLoader.load());
+        primaryStage.initStyle(StageStyle.UTILITY);
+        primaryStage.sizeToScene();
+        primaryStage.setResizable(false);
         primaryStage.setTitle("Marksman");
         primaryStage.setScene(scene);
         primaryStage.show();

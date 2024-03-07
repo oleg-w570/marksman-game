@@ -11,7 +11,7 @@ public class PlayerHandler extends Thread {
     private final GameServer gameServer;
     private final Socket clientSocket;
     private final DataInputStream in;
-    private DataOutputStream out;
+    private final DataOutputStream out;
     private PlayerInfo playerInfo;
 
 
@@ -27,12 +27,25 @@ public class PlayerHandler extends Thread {
     @Override
     public void run() {
         try {
-            String nickname = requestNickname();
-            gameServer.addPlayer(nickname, this);
+            primaryPlayerProcessing();
             handlingMessage();
         } catch (IOException e) {
             stopConnection();
         }
+    }
+
+    private void primaryPlayerProcessing() throws IOException {
+        String nickname = in.readUTF();
+        while (gameServer.containsNickname(nickname)) {
+            out.writeUTF("The nickname " + nickname + " is already in use. Please enter a different nickname.");
+            nickname = in.readUTF();
+        }
+        while (gameServer.isGameStarted()) {
+            out.writeUTF("The game has already started. Please wait until the game ends.");
+            nickname = in.readUTF();
+        }
+        out.writeUTF("OK");
+        gameServer.addPlayer(nickname, this);
     }
 
     private void handlingMessage() throws IOException {
@@ -42,7 +55,7 @@ public class PlayerHandler extends Thread {
             switch (actionType) {
                 case WantToStart:
                     playerInfo.wantToStart = true;
-                    gameServer.updateWantToStart(this);
+                    gameServer.sendWantToStart(this);
                     gameServer.startGame();
                     break;
                 case Shoot:
@@ -56,16 +69,6 @@ public class PlayerHandler extends Thread {
                     break;
             }
         }
-    }
-
-    private String requestNickname() throws IOException {
-        String nickname = in.readUTF();
-        while (gameServer.containsNickname(nickname)) {
-            out.writeUTF("Nickname is taken");
-            nickname = in.readUTF();
-        }
-        out.writeUTF("OK");
-        return nickname;
     }
 
     private void stopConnection() {

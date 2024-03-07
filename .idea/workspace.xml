@@ -4,16 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d25e75a7-49a5-4341-b9bc-3c337dd62439" name="Changes" comment="шок 2">
+    <list default="true" id="d25e75a7-49a5-4341-b9bc-3c337dd62439" name="Changes" comment="шок 3">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/Action.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/Action.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/Arrow.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/Arrow.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/GameClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/GameClient.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/GameInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/GameInfo.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/GameServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/GameServer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/MarksmanGame.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/MarksmanGame.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/PlayerHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/PlayerHandler.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/ServerHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/ServerHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/State.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/GameState.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/org/oleg_w570/marksman_game/marksman-game-view.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/org/oleg_w570/marksman_game/marksman-game-view.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/WelcomeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/WelcomeController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/org/oleg_w570/marksman_game/welcome-view.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/org/oleg_w570/marksman_game/welcome-view.fxml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -82,7 +83,7 @@
       <command value="mvn verify" />
     </option>
   </component>
-  <component name="RunManager" selected="Application.GameServer">
+  <component name="RunManager" selected="Application.MarksmanGame">
     <configuration name="GameServer" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="org.oleg_w570.marksman_game.GameServer" />
       <module name="marksman_game" />
@@ -150,7 +151,7 @@
       <workItem from="1709627104919" duration="14408000" />
       <workItem from="1709654970799" duration="8768000" />
       <workItem from="1709731138288" duration="19208000" />
-      <workItem from="1709807228769" duration="14596000" />
+      <workItem from="1709807228769" duration="23168000" />
     </task>
     <task id="LOCAL-00001" summary="init">
       <option name="closed" value="true" />
@@ -192,7 +193,15 @@
       <option name="project" value="LOCAL" />
       <updated>1709757569331</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="шок 3">
+      <option name="closed" value="true" />
+      <created>1709835233255</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1709835233255</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -202,7 +211,8 @@
     <MESSAGE value="init" />
     <MESSAGE value="up" />
     <MESSAGE value="шок 2" />
-    <option name="LAST_COMMIT_MESSAGE" value="шок 2" />
+    <MESSAGE value="шок 3" />
+    <option name="LAST_COMMIT_MESSAGE" value="шок 3" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

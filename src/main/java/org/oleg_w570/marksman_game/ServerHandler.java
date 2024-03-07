@@ -50,27 +50,28 @@ public class ServerHandler extends Thread {
                 case WantToStart -> gameClient.setPlayerWantToStart(action.info());
                 case State -> gameClient.setState(gson.fromJson(action.info(), GameState.class));
                 case Update -> gameClient.updateGameInfo(gson.fromJson(action.info(), GameInfo.class));
-                case WantToPause -> gameClient.updatePlayerWantToStart(action.info());
+                case WantToPause -> gameClient.updatePlayerWantToPause(action.info());
                 case Winner -> gameClient.showWinner(gson.fromJson(action.info(), PlayerInfo.class));
                 case Reset -> gameClient.resetGameInfo(gson.fromJson(action.info(), GameInfo.class));
-                case Remove -> gameClient.removePlayer(gson.fromJson(action.info(), PlayerInfo.class));
+                case Remove -> gameClient.removePlayer(action.info());
+                case Stop -> gameClient.showStop();
             }
         }
     }
 
     private void downHandler() {
         try {
-            in.close();
-            out.close();
             clientSocket.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
-        } finally {
-            interrupt();
         }
     }
 
-    public void sendMessage(String msg) throws IOException {
-        out.writeUTF(msg);
+    public void sendMessage(String msg) {
+        try {
+            out.writeUTF(msg);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

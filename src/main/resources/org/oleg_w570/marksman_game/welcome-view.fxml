@@ -2,12 +2,12 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
 
 
-<AnchorPane prefHeight="400.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.oleg_w570.marksman_game.WelcomeController">
+<VBox alignment="CENTER" fillWidth="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="185.0" prefWidth="180.0" spacing="10.0" style="-fx-background-color: #eff1f5;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.oleg_w570.marksman_game.WelcomeController">
    <children>
-      <TextField fx:id="nicknameField" layoutX="75.0" layoutY="154.0" />
-      <Button layoutX="120.0" layoutY="187.0" mnemonicParsing="false" onAction="#onConnectButtonClick" text="Connect" />
+      <TextField fx:id="nicknameField" promptText="Please enter a nickname" style="-fx-background-color: #dce0e8; -fx-text-fill: #4c4f69; -fx-prompt-text-fill: #6c6f85;" />
+      <Button mnemonicParsing="false" onAction="#onConnectButtonClick" style="-fx-background-color: #ccd0da;" text="Connect" textFill="#4c4f69" />
    </children>
-</AnchorPane>
+</VBox>
