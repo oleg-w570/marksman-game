@@ -8,6 +8,9 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import static java.lang.Math.sqrt;
 
@@ -21,7 +24,8 @@ public class GameServer {
     private GameState state = GameState.OFF;
     private final GameInfo gameInfo = new GameInfo(height);
     private final List<PlayerHandler> handlerList = new ArrayList<>();
-    Thread nextThread;
+    private Thread nextThread;
+
 
     public static void main(String[] args) {
         GameServer server = new GameServer();
@@ -132,7 +136,7 @@ public class GameServer {
                         if (state == GameState.PAUSE) pause();
                         next();
                         sendGameInfo(Action.Type.Update);
-                        Thread.sleep(4);
+                        Thread.sleep(16);
                     }
                     sendWinner();
                 } catch (InterruptedException e) {

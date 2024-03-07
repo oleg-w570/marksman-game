@@ -13,7 +13,7 @@ public class MarksmanGame extends Application {
     public void start(Stage primaryStage) throws Exception {
         FXMLLoader fxmlLoader = new FXMLLoader(MarksmanGame.class.getResource("welcome-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
-        primaryStage.initStyle(StageStyle.UTILITY);
+//        primaryStage.initStyle(StageStyle.UTILITY);
         primaryStage.sizeToScene();
         primaryStage.setResizable(false);
         primaryStage.setTitle("Marksman");
