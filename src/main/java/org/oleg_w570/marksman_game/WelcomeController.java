@@ -19,19 +19,18 @@ public class WelcomeController {
     private DataInputStream in;
     private DataOutputStream out;
 
-    @FXML
-    private void initialize() {
+    private void connectServer() {
         try {
             clientSocket = new Socket("localhost", 7777);
             in = new DataInputStream(clientSocket.getInputStream());
             out = new DataOutputStream(clientSocket.getOutputStream());
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            Alert alert = new Alert(Alert.AlertType.WARNING, "Server is not available.");
+            alert.showAndWait();
         }
     }
 
-    @FXML
-    private void onConnectButtonClick() {
+    private void loginGame() {
         try {
             out.writeUTF(nicknameField.getText());
             String response = in.readUTF();
@@ -50,6 +49,15 @@ public class WelcomeController {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
 
+    @FXML
+    private void onConnectButtonClick() {
+        if (clientSocket == null) {
+            connectServer();
+        }
+        if (clientSocket != null) {
+            loginGame();
+        }
     }
 }

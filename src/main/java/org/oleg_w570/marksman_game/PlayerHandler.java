@@ -36,15 +36,13 @@ public class PlayerHandler extends Thread {
 
     private void primaryPlayerProcessing() throws IOException {
         String nickname = in.readUTF();
-        while (gameServer.containsNickname(nickname)) {
-            out.writeUTF("The nickname " + nickname + " is already in use.\nPlease enter a different nickname.");
+        String response = gameServer.canPlayerConnect(nickname);
+        while (!response.equals("OK")) {
+            out.writeUTF(response);
             nickname = in.readUTF();
+            response = gameServer.canPlayerConnect(nickname);
         }
-        while (gameServer.isGameStarted()) {
-            out.writeUTF("The game has already started.\nPlease wait until the game ends.");
-            nickname = in.readUTF();
-        }
-        out.writeUTF("OK");
+        out.writeUTF(response);
         gameServer.addPlayer(nickname, this);
     }
 

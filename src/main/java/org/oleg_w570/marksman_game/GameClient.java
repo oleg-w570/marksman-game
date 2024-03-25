@@ -1,6 +1,5 @@
 package org.oleg_w570.marksman_game;
 
-import com.google.gson.Gson;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
@@ -18,7 +17,6 @@ import java.io.DataOutputStream;
 import java.net.Socket;
 
 public class GameClient {
-    public static final Gson gson = new Gson();
     @FXML
     VBox triangleBox;
     @FXML
@@ -39,24 +37,21 @@ public class GameClient {
     @FXML
     void onStartButtonClick() {
         if (state == GameState.OFF) {
-            String jsonStart = gson.toJson(Action.Type.WantToStart);
-            serverHandler.sendMessage(jsonStart);
+            serverHandler.sendAction(Action.Type.WantToStart);
         }
     }
 
     @FXML
     void onPauseButtonClick() {
         if (state != GameState.OFF) {
-            String json = gson.toJson(Action.Type.WantToPause);
-            serverHandler.sendMessage(json);
+            serverHandler.sendAction(Action.Type.WantToPause);
         }
     }
 
     @FXML
     void onShootButtonClick() {
         if (state == GameState.ON) {
-            String json = gson.toJson(Action.Type.Shoot);
-            serverHandler.sendMessage(json);
+            serverHandler.sendAction(Action.Type.Shoot);
         }
     }
 
@@ -163,9 +158,9 @@ public class GameClient {
         shotsLabel.setText(String.valueOf(playerInfo.shots));
     }
 
-    public void updatePlayerWantToPause(final String playerColor) {
-        Polygon playerTriangle = findTriangle(playerColor);
-        if (playerTriangle.getStroke() == Color.BLACK) playerTriangle.setStroke(Color.RED);
+    public void updatePlayerWantToPause(final String nickname) {
+        Polygon playerTriangle = findTriangle(nickname);
+        if (playerTriangle.getStroke() == Color.BLACK) playerTriangle.setStroke(Color.WHITESMOKE);
         else playerTriangle.setStroke(Color.BLACK);
     }
 

@@ -43,13 +43,12 @@ public class GameServer {
     public void removePlayer(PlayerHandler handler) {
         handlerList.remove(handler);
         if (handler.getPlayerInfo() != null) {
-            gameInfo.playerList.remove(handler.getPlayerInfo());
-            sendRemove(handler.getPlayerInfo());
             if (nextThread != null && nextThread.isAlive()) {
                 nextThread.interrupt();
-            } else {
-                startGame();
             }
+            gameInfo.playerList.remove(handler.getPlayerInfo());
+            sendRemove(handler.getPlayerInfo());
+            startGame();
         }
     }
 
@@ -296,5 +295,16 @@ public class GameServer {
 
     public boolean isGameStarted() {
         return state == GameState.ON || state == GameState.PAUSE;
+    }
+    public String canPlayerConnect(String nickname) {
+        String response = "OK";
+        if (containsNickname(nickname))
+            response = "The nickname " + nickname + " is already in use. Please enter a different nickname.\n";
+        if (gameInfo.playerList.size() == 4)
+            response = "The maximum number of players has been reached.\n";
+        if (isGameStarted()) {
+            response = "The game has already started. Please wait until the game ends.\n";
+        }
+        return response;
     }
 }

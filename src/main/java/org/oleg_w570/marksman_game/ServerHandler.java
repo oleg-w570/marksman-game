@@ -1,14 +1,15 @@
 package org.oleg_w570.marksman_game;
 
+import com.google.gson.Gson;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
-import static org.oleg_w570.marksman_game.GameClient.gson;
-
 public class ServerHandler extends Thread {
-    GameClient gameClient;
+    private final Gson gson = new Gson();
+    private final GameClient gameClient;
     private final Socket clientSocket;
     private final DataInputStream in;
     private final DataOutputStream out;
@@ -67,9 +68,10 @@ public class ServerHandler extends Thread {
         }
     }
 
-    public void sendMessage(String msg) {
+    public void sendAction(Action.Type actionType) {
         try {
-            out.writeUTF(msg);
+            String json = gson.toJson(actionType);
+            out.writeUTF(json);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
