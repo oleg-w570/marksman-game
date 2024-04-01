@@ -37,6 +37,7 @@
             <Button mnemonicParsing="false" onAction="#onStartButtonClick" style="-fx-background-color: #414559;" text="Start" textFill="#c6d0f5" />
             <Button mnemonicParsing="false" onAction="#onPauseButtonClick" style="-fx-background-color: #414559;" text="Pause" textFill="#c6d0f5" />
             <Button mnemonicParsing="false" onAction="#onShootButtonClick" style="-fx-background-color: #414559;" text="Shoot" textFill="#c6d0f5" />
+            <Button mnemonicParsing="false" onAction="#onLeaderboardButtonClick" style="-fx-background-color: #414559;" text="Leaderboard" textFill="#c6d0f5" />
          </children>
       </HBox>
    </bottom>

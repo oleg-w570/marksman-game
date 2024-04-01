@@ -65,6 +65,9 @@ public class PlayerHandler extends Thread {
                     gameServer.sendWantToPause(this);
                     gameServer.pauseGame();
                     break;
+                case Leaderboard:
+                    gameServer.sendLeaderboard(this);
+                    break;
             }
         }
     }

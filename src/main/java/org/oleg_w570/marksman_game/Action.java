@@ -11,6 +11,6 @@ public record Action(Type type, String info) {
         Winner,
         Reset,
         Remove,
-        Stop,
+        Stop, Leaderboard,
     }
 }

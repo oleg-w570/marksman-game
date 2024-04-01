@@ -25,6 +25,7 @@ public class GameServer {
 
 
     public static void main(String[] args) {
+        SessionFactoryBuilder.getSessionFactory();
         GameServer server = new GameServer();
         server.start(7777);
     }
@@ -67,11 +68,12 @@ public class GameServer {
         return false;
     }
 
-    public void addPlayer(String nickname, PlayerHandler handler) throws IOException {
+    public void addPlayer(String nickname, PlayerHandler handler) {
         String color = colors[rand.nextInt(colors.length)];
         while (containsColor(color)) color = colors[rand.nextInt(colors.length)];
 
-        PlayerInfo newPlayer = new PlayerInfo(nickname, color);
+        PlayerInfo newPlayer = PlayerInfo.loadOrCreateByName(nickname);
+        newPlayer.color = color;
         gameInfo.playerList.add(newPlayer);
         handler.setPlayerInfo(newPlayer);
 
@@ -89,7 +91,7 @@ public class GameServer {
         return false;
     }
 
-    private void sendNewPlayer(PlayerInfo p) throws IOException {
+    private void sendNewPlayer(PlayerInfo p) {
         String jsonPlayer = gson.toJson(p);
         Action action = new Action(Action.Type.New, jsonPlayer);
         String json = gson.toJson(action);
@@ -167,6 +169,7 @@ public class GameServer {
 
     private void sendWinner() {
         PlayerInfo winner = findWinner();
+        winner.increaseWins();
         String jsonWinner = gson.toJson(winner);
         Action action = new Action(Action.Type.Winner, jsonWinner);
         String json = gson.toJson(action);
@@ -296,6 +299,7 @@ public class GameServer {
     public boolean isGameStarted() {
         return state == GameState.ON || state == GameState.PAUSE;
     }
+
     public String canPlayerConnect(String nickname) {
         String response = "OK";
         if (containsNickname(nickname))
@@ -306,5 +310,13 @@ public class GameServer {
             response = "The game has already started. Please wait until the game ends.\n";
         }
         return response;
+    }
+
+    public void sendLeaderboard(PlayerHandler handler) {
+        LeaderboardInfo leaderboard = new LeaderboardInfo(PlayerInfo.getAllPlayers());
+        String jsonInfo = gson.toJson(leaderboard);
+        Action action = new Action(Action.Type.Leaderboard, jsonInfo);
+        String json = gson.toJson(action);
+        handler.sendMessage(json);
     }
 }

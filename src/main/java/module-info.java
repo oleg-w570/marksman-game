@@ -1,4 +1,4 @@
-module org.oleg_w570.marksman_game {
+open module org.oleg_w570.marksman_game {
     requires javafx.controls;
     requires javafx.fxml;
     requires javafx.web;
@@ -10,7 +10,11 @@ module org.oleg_w570.marksman_game {
     requires org.kordamp.bootstrapfx.core;
     requires eu.hansolo.tilesfx;
     requires com.google.gson;
+    requires org.hibernate.orm.core;
+    requires jakarta.persistence;
+    requires java.naming;
+    requires java.sql;
 
-    opens org.oleg_w570.marksman_game to javafx.fxml;
+//    opens org.oleg_w570.marksman_game to javafx.fxml;
     exports org.oleg_w570.marksman_game;
 }

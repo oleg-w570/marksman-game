@@ -1,16 +1,22 @@
 package org.oleg_w570.marksman_game;
 
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Polygon;
+import javafx.stage.Stage;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -55,6 +61,11 @@ public class GameClient {
         }
     }
 
+    @FXML
+    void onLeaderboardButtonClick() {
+        serverHandler.sendAction(Action.Type.Leaderboard);
+    }
+
 
     public void setGameInfo(final GameInfo gameInfo) {
         for (PlayerInfo p : gameInfo.playerList) {
@@ -86,7 +97,15 @@ public class GameClient {
             shotsCount.setTextFill(Color.valueOf("#4c4f69"));
             shotsCount.setId(p.nickname + "ShotsCount");
 
-            VBox vbox = new VBox(0.0d, score, scoreCount, shots, shotsCount);
+            Label wins = new Label(p.nickname + " wins:");
+            wins.setTextFill(Color.valueOf("#4c4f69"));
+            wins.setId(p.nickname + "Wins");
+
+            Label winsCount = new Label(String.valueOf(p.wins));
+            winsCount.setTextFill(Color.valueOf("#4c4f69"));
+            winsCount.setId(p.nickname + "WinsCount");
+
+            VBox vbox = new VBox(0.0d, wins, winsCount, score, scoreCount, shots, shotsCount);
             vbox.setBorder(Border.stroke(Color.valueOf("#4c4f69")));
             vbox.setAlignment(Pos.CENTER);
             vbox.setId(p.nickname + "VBox");
@@ -153,7 +172,7 @@ public class GameClient {
         return (Label) gamePane.getScene().lookup("#" + nickname + "ShotsCount");
     }
 
-    public void setShots(final PlayerInfo playerInfo) {
+    private void setShots(final PlayerInfo playerInfo) {
         Label shotsLabel = findShotsCountLabel(playerInfo.nickname);
         shotsLabel.setText(String.valueOf(playerInfo.shots));
     }
@@ -164,12 +183,22 @@ public class GameClient {
         else playerTriangle.setStroke(Color.BLACK);
     }
 
+    private Label findWinsCountLabel(final String nickname) {
+        return (Label) gamePane.getScene().lookup("#" + nickname + "WinsCount");
+    }
+
+    private void setWins(PlayerInfo p) {
+        Label winsCount = findWinsCountLabel(p.nickname);
+        winsCount.setText(String.valueOf(p.wins));
+    }
+
     public void setState(final GameState state) {
         this.state = state;
     }
 
-    public void showWinner(final PlayerInfo p) {
+    public void showWinner(PlayerInfo p) {
         Platform.runLater(() -> {
+            setWins(p);
             String info = "Congratulations to " + p.nickname + "!\n" + p.nickname + " won with " + p.score + " score.";
             Alert alert = new Alert(Alert.AlertType.INFORMATION, info);
             alert.show();
@@ -206,6 +235,26 @@ public class GameClient {
             String info = "The game was urgently stopped due to the player's exit.";
             Alert alert = new Alert(Alert.AlertType.WARNING, info);
             alert.show();
+        });
+    }
+
+    public void showLeaderboard(LeaderboardInfo info) {
+        Platform.runLater(() -> {
+            final TableView<PlayerInfo> tableView = new TableView<>(FXCollections.observableList(info.getAllPlayers()));
+            final TableColumn<PlayerInfo, String> nameColumn = new TableColumn<>("Name");
+            final TableColumn<PlayerInfo, Integer> winsColumn = new TableColumn<>("Wins");
+            nameColumn.setCellValueFactory(new PropertyValueFactory<PlayerInfo, String>("nickname"));
+            winsColumn.setCellValueFactory(new PropertyValueFactory<PlayerInfo, Integer>("wins"));
+            winsColumn.setSortType(TableColumn.SortType.DESCENDING);
+            tableView.getColumns().addAll(nameColumn, winsColumn);
+            tableView.getSortOrder().add(winsColumn);
+            tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+
+            Stage stage = new Stage();
+            Scene scene = new Scene(tableView);
+            stage.setScene(scene);
+            stage.setTitle("Leaderboard");
+            stage.show();
         });
     }
 }

@@ -4,13 +4,20 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d25e75a7-49a5-4341-b9bc-3c337dd62439" name="Changes" comment="шок завершился">
+    <list default="true" id="d25e75a7-49a5-4341-b9bc-3c337dd62439" name="Changes" comment="улучшения">
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/LeaderboardInfo.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/SessionFactoryBuilder.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/hibernate.cfg.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/module-info.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/Action.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/Action.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/GameClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/GameClient.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/GameServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/GameServer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/PlayerHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/PlayerHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/PlayerInfo.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/PlayerInfo.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/ServerHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/ServerHandler.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/WelcomeController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/oleg_w570/marksman_game/WelcomeController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/org/oleg_w570/marksman_game/marksman-game-view.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/org/oleg_w570/marksman_game/marksman-game-view.fxml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -59,6 +66,8 @@
     &quot;Application.MarksmanGame.executor&quot;: &quot;Run&quot;,
     &quot;Application.WelcomeApp.executor&quot;: &quot;Run&quot;,
     &quot;Maven.marksman_game [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.marksman_game [org.apache.maven.plugins:maven-clean-plugin:2.5:clean].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.marksman_game [validate].executor&quot;: &quot;Run&quot;,
     &quot;Maven.marksman_game [verify].executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
@@ -72,8 +81,13 @@
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settings.project.maven.importing&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settings.project.maven.repository.indices&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  },
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;postgresql&quot;
+    ]
   }
 }</component>
   <component name="QodanaReportsService">
@@ -81,13 +95,19 @@
       <ReportDescription localRun="true" path="C:\Users\Oleg\AppData\Local\Temp\qodana_output\qodana.sarif.json" reportGuid="8269f66e-0f39-45aa-9b6a-bb7c8ae5dac4" reportId="marksman-game/qodana/2024-03-08" />
     </option>
   </component>
+  <component name="RecentsManager">
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="org.oleg_w570.marksman_game" />
+    </key>
+  </component>
   <component name="RunAnythingCache">
     <option name="myCommands">
       <command value="mvn clean" />
       <command value="mvn verify" />
+      <command value="mvn validate" />
     </option>
   </component>
-  <component name="RunManager" selected="Application.GameServer">
+  <component name="RunManager" selected="Application.MarksmanGame">
     <configuration name="GameServer" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="org.oleg_w570.marksman_game.GameServer" />
       <module name="marksman_game" />
@@ -162,7 +182,22 @@
       <workItem from="1711271099276" duration="1325000" />
       <workItem from="1711343636551" duration="185000" />
       <workItem from="1711389394482" duration="306000" />
-      <workItem from="1711389753987" duration="4168000" />
+      <workItem from="1711389753987" duration="4226000" />
+      <workItem from="1711453285729" duration="493000" />
+      <workItem from="1711455769672" duration="213000" />
+      <workItem from="1711471146142" duration="128000" />
+      <workItem from="1711472017828" duration="179000" />
+      <workItem from="1711538107474" duration="3955000" />
+      <workItem from="1711563284035" duration="1479000" />
+      <workItem from="1711609711438" duration="36000" />
+      <workItem from="1711609758731" duration="479000" />
+      <workItem from="1711610253211" duration="46000" />
+      <workItem from="1711610312098" duration="5479000" />
+      <workItem from="1711883163607" duration="2000" />
+      <workItem from="1711883271205" duration="20000" />
+      <workItem from="1711958664963" duration="13722000" />
+      <workItem from="1711998744161" duration="115000" />
+      <workItem from="1711998975806" duration="461000" />
     </task>
     <task id="LOCAL-00001" summary="init">
       <option name="closed" value="true" />
@@ -228,7 +263,15 @@
       <option name="project" value="LOCAL" />
       <updated>1709852360715</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="улучшения">
+      <option name="closed" value="true" />
+      <created>1711393981393</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1711393981394</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -241,7 +284,8 @@
     <MESSAGE value="шок 3" />
     <MESSAGE value="шок 4" />
     <MESSAGE value="шок завершился" />
-    <option name="LAST_COMMIT_MESSAGE" value="шок завершился" />
+    <MESSAGE value="улучшения" />
+    <option name="LAST_COMMIT_MESSAGE" value="улучшения" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

@@ -56,6 +56,7 @@ public class ServerHandler extends Thread {
                 case Reset -> gameClient.resetGameInfo(gson.fromJson(action.info(), GameInfo.class));
                 case Remove -> gameClient.removePlayer(action.info());
                 case Stop -> gameClient.showStop();
+                case Leaderboard -> gameClient.showLeaderboard(gson.fromJson(action.info(), LeaderboardInfo.class));
             }
         }
     }
